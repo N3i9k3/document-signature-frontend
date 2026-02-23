@@ -4,23 +4,14 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PublicSign from "./pages/PublicSign";
 import DocumentPreview from "./pages/DocumentPreview";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
   return (
     <Router>
       <Routes>
-
-        {/* Smart root route */}
-        <Route
-          path="/"
-          element={
-            userInfo?.token
-              ? <Navigate to="/dashboard" />
-              : <Navigate to="/login" />
-          }
-        />
+        {/* Root redirects to login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -29,15 +20,14 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            userInfo?.token
-              ? <Dashboard />
-              : <Navigate to="/login" />
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
           }
         />
 
         <Route path="/public-sign/:token" element={<PublicSign />} />
         <Route path="/preview/:id" element={<DocumentPreview />} />
-
       </Routes>
     </Router>
   );
