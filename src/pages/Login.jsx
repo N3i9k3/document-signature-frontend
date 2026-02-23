@@ -22,7 +22,7 @@ function Login() {
       );
 
       localStorage.setItem("userInfo", JSON.stringify(res.data));
-      navigate("/");
+       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
       alert(error.response?.data?.message || "Login failed");
