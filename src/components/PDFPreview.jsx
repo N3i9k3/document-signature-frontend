@@ -5,6 +5,9 @@ import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
+// 🔥 Production backend URL
+const API = "https://document-signature-backend-pewy.onrender.com";
+
 function PDFPreview({ fileUrl, documentId, token }) {
   const [numPages, setNumPages] = useState(null);
   const [signatures, setSignatures] = useState([]);
@@ -13,12 +16,12 @@ function PDFPreview({ fileUrl, documentId, token }) {
     setNumPages(numPages);
   }
 
-  // ✅ Fetch signatures by documentId
+  // ✅ Fetch signatures
   useEffect(() => {
     const fetchSignatures = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/signatures/${documentId}`,
+          `${API}/api/signatures/${documentId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -37,7 +40,7 @@ function PDFPreview({ fileUrl, documentId, token }) {
     }
   }, [documentId, token]);
 
-  // ✅ Handle click to create signature
+  // ✅ Create signature
   const handleClick = async (e, pageNumber) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -48,7 +51,7 @@ function PDFPreview({ fileUrl, documentId, token }) {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/public/sign",
+        `${API}/api/public/sign`,
         {
           documentId,
           x: relativeX,
@@ -58,7 +61,6 @@ function PDFPreview({ fileUrl, documentId, token }) {
         }
       );
 
-      // instant UI update
       setSignatures((prev) => [...prev, res.data]);
     } catch (err) {
       console.error("Error saving signature:", err);
@@ -69,7 +71,7 @@ function PDFPreview({ fileUrl, documentId, token }) {
   const handleAccept = async (id) => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/signatures/${id}/accept`,
+        `${API}/api/signatures/${id}/accept`,
         {},
         {
           headers: {
@@ -95,7 +97,7 @@ function PDFPreview({ fileUrl, documentId, token }) {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/signatures/${id}/reject`,
+        `${API}/api/signatures/${id}/reject`,
         { reason },
         {
           headers: {
@@ -116,7 +118,6 @@ function PDFPreview({ fileUrl, documentId, token }) {
 
   return (
     <div className="mt-6 border p-4">
-      {/* ✅ PDF Viewer */}
       <Document file={{ url: fileUrl }} onLoadSuccess={onDocumentLoadSuccess}>
         {numPages &&
           Array.from(new Array(numPages), (_, index) => (
@@ -131,7 +132,6 @@ function PDFPreview({ fileUrl, documentId, token }) {
             >
               <Page pageNumber={index + 1} />
 
-              {/* Render signatures on correct page */}
               {signatures
                 .filter((sig) => sig.page === index + 1)
                 .map((sig) => (
@@ -152,7 +152,6 @@ function PDFPreview({ fileUrl, documentId, token }) {
           ))}
       </Document>
 
-      {/* ✅ Lifecycle Section */}
       <div className="mt-8">
         <h3 className="font-semibold mb-4 text-lg">Signatures</h3>
 

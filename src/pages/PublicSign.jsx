@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
+const BACKEND_URL = "https://document-signature-backend-pewy.onrender.com";
+
 const PublicSign = () => {
   const { token } = useParams();
   const [signatureData, setSignatureData] = useState(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(""); // To show signing success
-  const [loading, setLoading] = useState(false); // For button state
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch signature info using token
     axios
-      .get(`http://localhost:5000/api/public/sign/${token}`)
+      .get(`${BACKEND_URL}/api/public/sign/${token}`)
       .then((res) => {
         setSignatureData(res.data);
       })
@@ -26,9 +27,8 @@ const PublicSign = () => {
 
     setLoading(true);
     try {
-      // ✅ Updated PATCH call with token query param
       await axios.patch(
-        `http://localhost:5000/api/public/sign/${signatureData.signatureId}?token=${token}`
+        `${BACKEND_URL}/api/public/sign/${signatureData.signatureId}?token=${token}`
       );
 
       setSuccess("You have successfully signed the document!");

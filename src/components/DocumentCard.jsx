@@ -1,4 +1,7 @@
 // src/components/DocumentCard.jsx
+
+const BACKEND_URL = "https://document-signature-backend-pewy.onrender.com";
+
 const DocumentCard = ({ doc }) => {
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 flex flex-col justify-between h-full">
@@ -25,7 +28,9 @@ const DocumentCard = ({ doc }) => {
         </span>
 
         <button
-          onClick={() => window.open(`http://localhost:5000${doc.filePath}`, "_blank")}
+          onClick={() =>
+            window.open(`${BACKEND_URL}${doc.filePath}`, "_blank")
+          }
           className="text-blue-600 font-medium hover:underline text-sm"
         >
           View

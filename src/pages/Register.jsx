@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
+const BACKEND_URL = "https://document-signature-backend-pewy.onrender.com";
+
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -13,7 +15,7 @@ function Register() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/users/register",
+        `${BACKEND_URL}/api/users/register`,
         { name, email, password }
       );
 

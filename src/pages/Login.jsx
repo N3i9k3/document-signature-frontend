@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
+const BACKEND_URL = "https://document-signature-backend-pewy.onrender.com";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,19 +14,14 @@ function Login() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/users/login",
+        `${BACKEND_URL}/api/users/login`,
         {
           email,
           password,
         }
       );
 
-      // 🔥 Store complete user info including token
       localStorage.setItem("userInfo", JSON.stringify(res.data));
-
-      // Optional: confirm it saved
-      console.log("Saved userInfo:", localStorage.getItem("userInfo"));
-
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);

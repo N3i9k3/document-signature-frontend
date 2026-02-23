@@ -1,11 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 
+const API = axios.create({
+  baseURL: "https://document-signature-backend-pewy.onrender.com",
+});
+
 function SignatureEditor({ documentId, fileUrl }) {
   const containerRef = useRef(null);
   const [signatures, setSignatures] = useState([]);
   const [draggingId, setDraggingId] = useState(null);
-  const [isDragging, setIsDragging] = useState(false); // track drag state
+  const [isDragging, setIsDragging] = useState(false);
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const token = userInfo?.token;
@@ -13,8 +17,8 @@ function SignatureEditor({ documentId, fileUrl }) {
   useEffect(() => {
     const fetchSignatures = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/signatures/${documentId}`,
+        const res = await API.get(
+          `/api/signatures/${documentId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setSignatures(res.data);
@@ -22,19 +26,20 @@ function SignatureEditor({ documentId, fileUrl }) {
         console.error(err.response?.data || err.message);
       }
     };
+
     if (token) fetchSignatures();
   }, [documentId, token]);
 
   const handleClick = async (e) => {
-    if (isDragging) return; // ignore click if we were dragging
+    if (isDragging) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/signatures",
+      const res = await API.post(
+        `/api/signatures`,
         { documentId, x, y, page: 1 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -72,8 +77,8 @@ function SignatureEditor({ documentId, fileUrl }) {
     if (!sig) return;
 
     try {
-      await axios.put(
-        `http://localhost:5000/api/signatures/${draggingId}`,
+      await API.put(
+        `/api/signatures/${draggingId}`,
         { x: sig.x, y: sig.y },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -81,7 +86,7 @@ function SignatureEditor({ documentId, fileUrl }) {
       console.error(err.response?.data || err.message);
     } finally {
       setDraggingId(null);
-      setTimeout(() => setIsDragging(false), 0); // reset drag state after event loop
+      setTimeout(() => setIsDragging(false), 0);
     }
   };
 

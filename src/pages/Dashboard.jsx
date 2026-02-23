@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DocumentCard from "../components/DocumentCard";
 
+// ✅ Create centralized API instance
+const API = axios.create({
+  baseURL: "https://document-signature-backend-pewy.onrender.com",
+});
+
 function Dashboard() {
   const [documents, setDocuments] = useState([]);
   const [filter, setFilter] = useState("All");
@@ -29,9 +34,10 @@ function Dashboard() {
       const userInfo = JSON.parse(storedUser);
 
       try {
-        const res = await axios.get("http://localhost:5000/api/docs", {
+        const res = await API.get("/api/docs", {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
+
         setDocuments(res.data);
       } catch (error) {
         localStorage.removeItem("userInfo");
@@ -45,7 +51,6 @@ function Dashboard() {
   }, [navigate]);
 
   if (loading) {
-    // Loading skeleton
     return (
       <div className="bg-gray-50 min-h-screen py-10 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -67,7 +72,10 @@ function Dashboard() {
       <div className="max-w-7xl mx-auto">
         {/* Header + Filters */}
         <div className="bg-white p-6 rounded-xl shadow-md mb-8">
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">My Documents</h1>
+          <h1 className="text-3xl font-bold mb-4 text-gray-800">
+            My Documents
+          </h1>
+
           <div className="flex flex-wrap gap-4">
             {["All", "Pending", "Signed", "Rejected"].map((status) => (
               <button
@@ -93,7 +101,7 @@ function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDocs.map((doc) => (
-              <DocumentCard key={doc._id} doc={doc} className="h-48" />
+              <DocumentCard key={doc._id} doc={doc} />
             ))}
           </div>
         )}
