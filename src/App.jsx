@@ -12,13 +12,20 @@ function App() {
     <Router>
       <Routes>
 
-        {/* Default route → Login */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* Smart root route */}
+        <Route
+          path="/"
+          element={
+            userInfo?.token
+              ? <Navigate to="/dashboard" />
+              : <Navigate to="/login" />
+          }
+        />
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Route */}
+        {/* Protected Dashboard */}
         <Route
           path="/dashboard"
           element={
